@@ -1,0 +1,2005 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0E1117">
+<title>RGNR8V HLTH — Training Intake</title>
+<link href="https://cdn.jsdelivr.net/npm/@fontsource/orbitron@5.0.13/index.css" rel="stylesheet">
+<style>
+
+:root {
+  --bg:           #0E1117;
+  --surface:      #151B27;
+  --surface2:     #1C2A35;
+  --ink:          #E8EAF0;
+  --ink2:         #B0B7C3;
+  --ink3:         #6B7280;
+  --ink4:         #4B5563;
+  --accent:       #c8f135;
+  --accent-dim:   rgba(200,241,53,0.12);
+  --accent-glow:  rgba(200,241,53,0.25);
+  --border:       rgba(255,255,255,0.07);
+  --border2:      rgba(255,255,255,0.12);
+  --warn:         #EF6C6C;
+  --radius:       10px;
+  --radius-sm:    8px;
+  --sans:         -apple-system,'SF Pro Text','Helvetica Neue',sans-serif;
+  --mono:         'Orbitron', monospace;
+}
+
+* { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+
+html, body {
+  height: 100%;
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--ink);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+#app {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  max-width: 480px;
+  margin: 0 auto;
+  position: relative;
+}
+
+/* ── WELCOME ── */
+#welcome {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 40px 24px;
+  text-align: center;
+}
+#welcome.active { display: flex; }
+.welcome-logo { margin-bottom: 36px; }
+.welcome-logo img { width: min(260px,75%); height: auto; }
+.welcome-title {
+  font-family: var(--mono);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  color: var(--ink2);
+  margin-bottom: 16px;
+  text-transform: uppercase;
+}
+.welcome-body {
+  font-size: 14px;
+  color: var(--ink3);
+  line-height: 1.7;
+  margin-bottom: 32px;
+  max-width: 340px;
+}
+.welcome-body p { margin-bottom: 10px; }
+.time-badges {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 36px;
+}
+.time-badge {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 12px;
+  color: var(--ink3);
+  text-align: left;
+}
+.time-badge strong { display: block; font-size: 13px; color: var(--ink); margin-bottom: 2px; }
+.welcome-btn {
+  width: 100%;
+  max-width: 340px;
+  padding: 15px;
+  background: var(--accent);
+  color: #000;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: var(--sans);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 0 24px var(--accent-glow);
+}
+.welcome-btn:active { transform: scale(0.98); }
+
+/* ── TOP BAR ── */
+.topbar {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  padding: 52px 16px 12px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.topbar.visible { display: flex; }
+.topbar-logo img { height: 22px; width: auto; }
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.screen-counter {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink4);
+  letter-spacing: .04em;
+}
+
+/* ── PROGRESS ── */
+.progress-bar { height: 2px; background: var(--surface2); flex-shrink: 0; }
+.progress-fill {
+  height: 100%;
+  background: var(--accent);
+  transition: width .35s cubic-bezier(.4,0,.2,1);
+  width: 0%;
+}
+
+/* ── SCROLL AREA ── */
+.scroll-area {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 24px 16px 0;
+}
+.scroll-area::-webkit-scrollbar { width: 0; }
+
+/* ── STEP ── */
+.step { display: none; }
+.step.active { display: block; animation: fadeUp .2s ease; }
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(8px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+.step-header { margin-bottom: 24px; }
+.step-tag {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--accent);
+  font-weight: 700;
+  letter-spacing: .08em;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+.step-tag.opt { color: var(--ink4); }
+.step-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.25;
+  letter-spacing: -.3px;
+}
+.step-sub {
+  font-size: 13px;
+  color: var(--ink3);
+  margin-top: 6px;
+  line-height: 1.6;
+}
+.step-sub em { font-style: normal; color: var(--ink2); }
+
+/* ── FIELD ── */
+.field { margin-bottom: 22px; }
+.field-label {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ink3);
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  display: block;
+}
+.field-label span { font-family: var(--sans); text-transform: none; color: var(--ink4); font-weight: 400; font-size: 11px; }
+
+input[type="text"], textarea {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  font-family: var(--sans);
+  font-size: 15px;
+  color: var(--ink);
+  outline: none;
+  transition: border-color .2s;
+  -webkit-appearance: none;
+  resize: none;
+}
+input[type="text"]:focus, textarea:focus { border-color: var(--accent); }
+textarea { min-height: 72px; line-height: 1.5; }
+::placeholder { color: var(--ink4); }
+
+/* ── CHIPS — PILL ── */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.chip {
+  font-size: 14px;
+  font-weight: 500;
+  padding: 10px 16px;
+  border-radius: 100px;
+  border: 1px solid var(--border2);
+  background: var(--surface);
+  color: var(--ink2);
+  cursor: pointer;
+  transition: all .15s;
+  user-select: none;
+  line-height: 1;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+.chip:active { transform: scale(0.97); }
+.chip.sel {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* ── CHIPS — CARD (descriptive) ── */
+.cards { display: flex; flex-direction: column; gap: 8px; }
+.card-chip {
+  font-size: 13.5px;
+  font-weight: 500;
+  padding: 13px 15px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border2);
+  background: var(--surface);
+  color: var(--ink3);
+  cursor: pointer;
+  transition: all .15s;
+  user-select: none;
+  line-height: 1.5;
+  text-align: left;
+  width: 100%;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+.card-chip:active { transform: scale(0.99); }
+.card-chip.sel {
+  background: var(--surface2);
+  border-color: var(--accent);
+  color: var(--ink);
+}
+
+/* ── RATING CHIPS ── */
+.rating-chips {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.rating-chip {
+  width: 40px; height: 40px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  color: var(--ink3);
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .15s;
+  user-select: none;
+}
+.rating-chip:active { transform: scale(0.95); }
+.rating-chip.sel {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ── RANK BADGE (on ranked goal chips) ── */
+.rank-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px; height: 18px;
+  min-width: 18px;
+  background: var(--accent);
+  color: #000;
+  border-radius: 50%;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 900;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+.goal-hint {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--ink4);
+  letter-spacing: .04em;
+  margin-top: 8px;
+}
+.rating-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 5px;
+}
+.rating-labels span {
+  font-size: 11px;
+  color: var(--ink4);
+  font-family: var(--mono);
+  letter-spacing: .04em;
+}
+
+/* ── REGION ACCORDION ── */
+.region-section { margin-bottom: 8px; }
+.region-chip .region-arrow {
+  display: inline-block;
+  font-size: 9px;
+  margin-right: 8px;
+  transition: transform .2s ease;
+  color: var(--ink4);
+}
+.region-chip.sel .region-arrow { transform: rotate(90deg); color: var(--accent); }
+.region-panel { display: none; }
+.region-panel.open { display: block; animation: fadeUp .18s ease; }
+.region-panel-inner {
+  margin: 4px 0 8px 0;
+  padding: 16px;
+  background: rgba(255,255,255,0.025);
+  border-left: 2px solid var(--accent);
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+.region-panel-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--ink3);
+  margin-bottom: 12px;
+}
+
+/* ── L3 EXPANSION ── */
+.l3-block {
+  display: none;
+  margin: 4px 0 4px 12px;
+  padding: 14px 14px;
+  background: rgba(255,255,255,0.03);
+  border-left: 2px solid var(--accent);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  animation: fadeUp .18s ease;
+}
+.l3-block.open { display: block; }
+.l3-q {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--ink3);
+  margin-bottom: 8px;
+  margin-top: 14px;
+}
+.l3-q:first-child { margin-top: 0; }
+
+/* ── DIVIDER / SECTION ── */
+.divider { height: 1px; background: var(--border); margin: 24px 0; }
+.section-head {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink4);
+  margin-bottom: 14px;
+  margin-top: 24px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+.section-head:first-of-type { margin-top: 0; }
+
+/* ── OPT BANNER ── */
+.opt-banner {
+  background: var(--surface);
+  border: 1px dashed var(--border2);
+  border-radius: var(--radius);
+  padding: 18px;
+  margin-bottom: 24px;
+}
+.opt-banner-title { font-size: 15px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+.opt-banner-sub { font-size: 13px; color: var(--ink3); line-height: 1.5; }
+
+/* ── FOAM ROLLER AREA ── */
+.roller-area {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 10px;
+}
+.roller-name { font-size: 14px; font-weight: 700; color: var(--ink); margin-bottom: 2px; }
+.roller-tool {
+  font-size: 12px;
+  color: var(--accent);
+  font-family: var(--mono);
+  letter-spacing: .04em;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 10px;
+}
+.roller-instruction {
+  font-size: 13px;
+  color: var(--ink3);
+  line-height: 1.5;
+  margin-bottom: 12px;
+  padding: 10px;
+  background: var(--surface2);
+  border-radius: 6px;
+}
+
+/* ── VIDEO BLOCK ── */
+.video-block {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius);
+  padding: 18px;
+  margin-bottom: 14px;
+}
+.video-name {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 14px;
+}
+.setup-step {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+  font-size: 13px;
+  color: var(--ink3);
+  line-height: 1.5;
+}
+.step-num-badge {
+  width: 20px; height: 20px; min-width: 20px;
+  background: var(--surface2);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--ink4);
+  margin-top: 2px;
+}
+.upload-zone {
+  border: 1px dashed var(--border2);
+  border-radius: var(--radius);
+  padding: 18px;
+  text-align: center;
+  margin: 12px 0;
+  cursor: pointer;
+  transition: border-color .15s;
+  position: relative;
+}
+.upload-zone:hover, .upload-zone:active { border-color: var(--accent); }
+.upload-zone input[type="file"] {
+  position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+}
+.upload-label { font-size: 13px; color: var(--ink4); }
+.upload-label strong { color: var(--accent); font-weight: 700; }
+.upload-filename { font-size: 12px; color: var(--accent); margin-top: 6px; display: none; font-family: var(--mono); }
+
+/* ── NAV ── */
+.nav {
+  flex-shrink: 0;
+  padding: 12px 16px;
+  padding-bottom: max(12px, env(safe-area-inset-bottom));
+  display: none;
+  gap: 10px;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+}
+.nav.visible { display: flex; }
+
+.btn {
+  flex: 1;
+  padding: 14px;
+  border-radius: var(--radius-sm);
+  font-family: var(--sans);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: all .15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn:active { transform: scale(0.98); }
+.btn-back {
+  background: transparent;
+  color: var(--ink3);
+  border: 1px solid var(--border2);
+  flex: 0 0 auto;
+  padding: 14px 18px;
+}
+.btn-next {
+  background: var(--accent);
+  color: #000;
+  box-shadow: 0 0 20px var(--accent-glow);
+}
+.btn-skip {
+  background: transparent;
+  color: var(--ink4);
+  border: 1px dashed var(--border2);
+}
+
+/* ── OUTPUT ── */
+.output-card {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 12px;
+}
+.output-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.output-card-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  color: var(--ink3);
+}
+.output-text {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--ink3);
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 400px;
+  overflow-y: auto;
+}
+.copy-btn-sm {
+  font-size: 12px;
+  font-family: var(--sans);
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border2);
+  background: var(--surface2);
+  color: var(--ink2);
+  cursor: pointer;
+  transition: all .15s;
+}
+.copy-btn-sm.copied {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.thankyou {
+  text-align: center;
+  padding: 32px 16px 16px;
+}
+.thankyou-check {
+  width: 52px; height: 52px;
+  background: var(--accent-dim);
+  border: 1px solid var(--accent);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  margin: 0 auto 20px;
+}
+.thankyou h2 {
+  font-size: 18px;
+  font-weight: 700;
+  font-family: var(--mono);
+  letter-spacing: .04em;
+  margin-bottom: 6px;
+}
+.thankyou p { font-size: 13px; color: var(--ink3); line-height: 1.6; }
+
+.pb-safe { padding-bottom: max(20px, env(safe-area-inset-bottom)); }
+
+</style>
+</head>
+<body>
+
+<div id="app">
+
+<!-- ── WELCOME ── -->
+<div id="welcome">
+  <div class="welcome-logo">
+    <img src="logo.svg" alt="RGNR8V HLTH">
+  </div>
+  <div class="welcome-title">Training Intake</div>
+  <div class="welcome-body">
+    <p>Before we design anything, we need to understand your body — not just your goals, but how it feels day to day.</p>
+    <p>This intake is designed to surface things you might not have connected yet.</p>
+  </div>
+  <div class="time-badges">
+    <div class="time-badge"><strong>~5–7 min</strong>Base intake</div>
+    <div class="time-badge"><strong>+5–8 min</strong>Foam roller (optional)</div>
+    <div class="time-badge"><strong>+5 min</strong>Movement video (optional)</div>
+  </div>
+  <button class="welcome-btn" onclick="startForm()">Get started →</button>
+</div>
+
+<!-- ── TOP BAR ── -->
+<div class="topbar" id="topbar">
+  <div class="topbar-logo">
+    <img src="logo.svg" alt="RGNR8V HLTH">
+  </div>
+  <div class="topbar-right">
+    <div class="screen-counter" id="screen-counter"></div>
+  </div>
+</div>
+<div class="progress-bar" id="progress-bar" style="display:none;">
+  <div class="progress-fill" id="progress-fill"></div>
+</div>
+
+<!-- ── SCROLL AREA ── -->
+<div class="scroll-area" id="scroll-area" style="display:none;">
+
+<!-- ════ ABOUT YOU ════ -->
+<div class="step" id="s-about">
+  <div class="step-header">
+    <div class="step-tag">About You</div>
+    <div class="step-title">Tell us about yourself.</div>
+    <div class="step-sub">We'll use this to shape the structure of your program.</div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">Your name</label>
+    <input type="text" id="clientName" placeholder="First name is fine">
+  </div>
+
+  <div class="field">
+    <label class="field-label">Primary goal right now? <span>Pick up to 3 — tap to rank</span></label>
+    <div class="cards" data-field="primaryGoal" data-type="ranked" data-max="3">
+      <button class="card-chip">Build strength</button>
+      <button class="card-chip">Lose body fat</button>
+      <button class="card-chip">Move and feel better — less pain, more ease</button>
+      <button class="card-chip">Improve athletic performance</button>
+      <button class="card-chip">Recover from an injury or setback</button>
+      <button class="card-chip">General health and longevity</button>
+    </div>
+    <div class="goal-hint" id="goal-hint">Tap your #1 goal first, then #2, then #3</div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">In your own words <span>(optional)</span></label>
+    <textarea id="goalText" placeholder="What changes? What becomes possible?"></textarea>
+  </div>
+
+  <div class="field">
+    <label class="field-label">What's your training history?</label>
+    <div class="chips" data-field="trainingHistory" data-type="single">
+      <button class="chip">Never really trained</button>
+      <button class="chip">Just getting started</button>
+      <button class="chip">Trained before, been away for a while</button>
+      <button class="chip">On and off over the years</button>
+      <button class="chip">Currently training consistently</button>
+    </div>
+  </div>
+
+  <div class="field" id="training-gap-field" style="display:none;">
+    <label class="field-label">How long has it been since you trained regularly?</label>
+    <div class="chips" data-field="trainingGap" data-type="single">
+      <button class="chip">A few months</button>
+      <button class="chip">6 months – 1 year</button>
+      <button class="chip">1–3 years</button>
+      <button class="chip">3+ years</button>
+    </div>
+  </div>
+
+  <div class="field" id="training-exp-field" style="display:none;">
+    <label class="field-label">When you were training, how long had you been at it?</label>
+    <div class="chips" data-field="trainingPriorExp" data-type="single">
+      <button class="chip">Less than a year</button>
+      <button class="chip">1–3 years</button>
+      <button class="chip">3–5 years</button>
+      <button class="chip">5+ years</button>
+    </div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">Days per week available?</label>
+    <div class="chips" data-field="daysPerWeek" data-type="single">
+      <button class="chip">2 days</button>
+      <button class="chip">3 days</button>
+      <button class="chip">4 days</button>
+      <button class="chip">5 days</button>
+    </div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">Realistic session length?</label>
+    <div class="chips" data-field="sessionLength" data-type="single">
+      <button class="chip">30–45 min</button>
+      <button class="chip">45–60 min</button>
+      <button class="chip">60–75 min</button>
+      <button class="chip">75–90 min</button>
+    </div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">Equipment available? <span>(select all)</span></label>
+    <div class="chips" data-field="equipment" data-type="multi">
+      <button class="chip">Barbell + plates</button>
+      <button class="chip">Dumbbells</button>
+      <button class="chip">Resistance bands</button>
+      <button class="chip">Kettlebells</button>
+      <button class="chip">Pull-up bar</button>
+      <button class="chip">Cable machine</button>
+      <button class="chip">TRX / suspension trainer</button>
+      <button class="chip">Full gym</button>
+      <button class="chip">Bodyweight only</button>
+    </div>
+    <textarea id="equipmentText" placeholder="Anything else? (e.g. battle ropes, sled, rings…)" style="margin-top:10px;"></textarea>
+  </div>
+
+  <div class="pb-safe"></div>
+</div>
+
+<!-- ════ YOUR LIFE ════ -->
+<div class="step" id="s-life">
+  <div class="step-header">
+    <div class="step-tag">Your Life</div>
+    <div class="step-title">How you live shapes how we train.</div>
+    <div class="step-sub">Recovery, sleep, and stress determine as much about your progress as the workouts themselves.</div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">Hours sitting per day?</label>
+    <div class="chips" data-field="sittingHours" data-type="single">
+      <button class="chip">Less than 4</button>
+      <button class="chip">4–6 hrs</button>
+      <button class="chip">6–8 hrs</button>
+      <button class="chip">8+ hrs</button>
+    </div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">Nights per week you get 7+ hours sleep?</label>
+    <div class="chips" data-field="sleepNights" data-type="single">
+      <button class="chip">0–1 nights</button>
+      <button class="chip">2–3 nights</button>
+      <button class="chip">4–5 nights</button>
+      <button class="chip">6–7 nights</button>
+    </div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">Current stress level?</label>
+    <div class="rating-chips" data-field="stressLevel" data-type="single">
+      <button class="rating-chip">1</button><button class="rating-chip">2</button>
+      <button class="rating-chip">3</button><button class="rating-chip">4</button>
+      <button class="rating-chip">5</button><button class="rating-chip">6</button>
+      <button class="rating-chip">7</button><button class="rating-chip">8</button>
+      <button class="rating-chip">9</button><button class="rating-chip">10</button>
+    </div>
+    <div class="rating-labels"><span>Low</span><span>High</span></div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="field">
+    <label class="field-label">Medical conditions, surgeries, medications? <span>(select all)</span></label>
+    <div class="chips" data-field="medicalFlags" data-type="multi">
+      <button class="chip">None</button>
+      <button class="chip">Heart condition</button>
+      <button class="chip">Diabetes</button>
+      <button class="chip">Hypertension</button>
+      <button class="chip">Recent surgery</button>
+      <button class="chip">Chronic pain</button>
+      <button class="chip">Taking medications</button>
+      <button class="chip">Other</button>
+    </div>
+    <textarea id="medicalText" placeholder="Add context if anything needs it..." style="margin-top:10px;"></textarea>
+  </div>
+
+  <div class="field">
+    <label class="field-label">Current pain, injuries, or restrictions? <span>(select all)</span></label>
+    <div class="chips" data-field="injuries" data-type="multi">
+      <button class="chip">None</button>
+      <button class="chip">Neck</button>
+      <button class="chip">Shoulder</button>
+      <button class="chip">Upper back</button>
+      <button class="chip">Lower back</button>
+      <button class="chip">Hip</button>
+      <button class="chip">Knee</button>
+      <button class="chip">Ankle / Foot</button>
+      <button class="chip">Other</button>
+    </div>
+    <textarea id="injuriesText" placeholder="Tell us more about any injuries..." style="margin-top:10px;"></textarea>
+  </div>
+
+  <div class="field">
+    <label class="field-label">Movements that make things worse? <span>(select all)</span></label>
+    <div class="chips" data-field="aggravating" data-type="multi">
+      <button class="chip">None</button>
+      <button class="chip">Sitting long</button>
+      <button class="chip">Bending forward</button>
+      <button class="chip">Overhead reaching</button>
+      <button class="chip">Going upstairs</button>
+      <button class="chip">Going downstairs</button>
+      <button class="chip">Running / fast walking</button>
+      <button class="chip">Twisting</button>
+      <button class="chip">Other</button>
+    </div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">Working with PT, chiro, or physician?</label>
+    <div class="chips" data-field="hasProvider" data-type="single">
+      <button class="chip">No</button>
+      <button class="chip">PT / physio</button>
+      <button class="chip">Chiropractor</button>
+      <button class="chip">Physician</button>
+      <button class="chip">Other</button>
+    </div>
+  </div>
+
+  <div class="pb-safe"></div>
+</div>
+
+<!-- ════ POSTURE CHECK ════ -->
+<div class="step" id="s-posture">
+  <div class="step-header">
+    <div class="step-tag">Posture Check</div>
+    <div class="step-title">Stand how you normally would.</div>
+    <div class="step-sub">Grab a mirror or prop up your phone. <em>Don't fix anything</em> — we want your resting position, not your best posture.</div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">From the side — where does your head sit?</label>
+    <div class="cards" data-field="headPosition" data-type="single">
+      <button class="card-chip">My ear is roughly above my shoulder</button>
+      <button class="card-chip">My head sits slightly forward</button>
+      <button class="card-chip">My head is clearly forward — noticeably ahead of my shoulder</button>
+    </div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">Let your arms hang naturally. Palms face:</label>
+    <div class="chips" data-field="palmDirection" data-type="single">
+      <button class="chip">Toward my thighs</button>
+      <button class="chip">Slightly behind me</button>
+      <button class="chip">Clearly behind me</button>
+    </div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">Your upper back from the side:</label>
+    <div class="cards" data-field="upperBack" data-type="single">
+      <button class="card-chip">Relatively flat and upright</button>
+      <button class="card-chip">A slight curve forward — mild rounding</button>
+      <button class="card-chip">A noticeable hunch forward</button>
+    </div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">Stand against a wall — lower back gap:</label>
+    <div class="cards" data-field="lowerBackWall" data-type="single">
+      <button class="card-chip">Small gap — my lower back is close to the wall</button>
+      <button class="card-chip">Medium gap — I could slide a hand in</button>
+      <button class="card-chip">Large gap — my lower back arches clearly away</button>
+    </div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">When you stand, your knees tend to:</label>
+    <div class="chips" data-field="kneeStance" data-type="single">
+      <button class="chip">Stay soft and slightly bent</button>
+      <button class="chip">Sometimes push back</button>
+      <button class="chip">Almost always lock back</button>
+    </div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">Standing barefoot — your arches:</label>
+    <div class="chips" data-field="archPosition" data-type="single">
+      <button class="chip">Sit up off the floor</button>
+      <button class="chip">Slightly collapsed inward</button>
+      <button class="chip">Clearly collapsed — feet roll in</button>
+    </div>
+  </div>
+
+  <div class="pb-safe"></div>
+</div>
+
+<!-- ════ L1 BODY ASSESSMENT (all regions inline) ════ -->
+<div class="step" id="s-l1-open">
+  <div class="step-header">
+    <div class="step-tag">Layer 1 — Your Body</div>
+    <div class="step-title">Your body has a way of telling you when something's off.</div>
+    <div class="step-sub">Tap any area where you notice something. The questions will unfold as you go.</div>
+  </div>
+
+  <!-- NECK & SHOULDERS -->
+  <div class="region-section">
+    <button class="card-chip region-chip" value="neck"><span class="region-arrow">▸</span>Neck & Shoulders</button>
+    <div class="region-panel" id="rp-neck">
+      <div class="region-panel-inner">
+        <div class="region-panel-label">What does it feel like? Select all that apply.</div>
+        <div class="cards" data-field="neck_l2" data-type="multi">
+          <button class="card-chip" data-l3="neck-l3-1">That constant tightness sitting across the top of your shoulders — like you're always carrying something</button>
+          <button class="card-chip" data-l3="neck-l3-2">Headaches that build at the base of your skull and press forward behind your eyes</button>
+          <button class="card-chip" data-l3="neck-l3-3">You go to turn your head — checking a blind spot — and one side stops you short</button>
+          <button class="card-chip" data-l3="neck-l3-4">One shoulder sits noticeably higher than the other</button>
+          <button class="card-chip" data-l3="neck-l3-5">Your neck and shoulders brace upward the moment you're concentrating — and you only notice when someone tells you to relax</button>
+        </div>
+        <div class="l3-block" id="neck-l3-1">
+          <div class="l3-q">Where does it sit most?</div>
+          <div class="chips" data-field="neck_tight_loc" data-type="single">
+            <button class="chip">That ridge where neck meets shoulder</button><button class="chip">Base of skull</button>
+            <button class="chip">Spreading into upper back</button><button class="chip">Everywhere up there</button>
+          </div>
+          <div class="l3-q">When does it dig in hardest?</div>
+          <div class="chips" data-field="neck_tight_when" data-type="single">
+            <button class="chip">First thing in the morning</button><button class="chip">Mid-afternoon at a screen</button>
+            <button class="chip">End of a stressful day</button><button class="chip">It's just always there</button>
+          </div>
+          <div class="l3-q">Does a hot shower give temporary relief?</div>
+          <div class="chips" data-field="neck_tight_shower" data-type="single">
+            <button class="chip">Yes — only thing that touches it</button><button class="chip">A little, but it comes back</button><button class="chip">Not really</button>
+          </div>
+        </div>
+        <div class="l3-block" id="neck-l3-2">
+          <div class="l3-q">Where do the headaches end up?</div>
+          <div class="chips" data-field="neck_ha_loc" data-type="single">
+            <button class="chip">Behind one eye</button><button class="chip">Across my forehead</button>
+            <button class="chip">Up one side</button><button class="chip">Base of skull</button>
+          </div>
+          <div class="l3-q">What tends to bring them on?</div>
+          <div class="chips" data-field="neck_ha_trigger" data-type="multi">
+            <button class="chip">Long screens</button><button class="chip">Poor sleep</button>
+            <button class="chip">High stress days</button><button class="chip">They just show up</button>
+          </div>
+        </div>
+        <div class="l3-block" id="neck-l3-3">
+          <div class="l3-q">Which side catches?</div>
+          <div class="chips" data-field="neck_rot_side" data-type="single">
+            <button class="chip">Left</button><button class="chip">Right</button><button class="chip">Both, but one more</button>
+          </div>
+          <div class="l3-q">What does it feel like when it stops?</div>
+          <div class="chips" data-field="neck_rot_feel" data-type="single">
+            <button class="chip">A wall of stiffness</button><button class="chip">A grabbing sensation</button>
+            <button class="chip">Actual pain at end range</button><button class="chip">Stiff and achy together</button>
+          </div>
+        </div>
+        <div class="l3-block" id="neck-l3-4">
+          <div class="l3-q">Which side sits higher?</div>
+          <div class="chips" data-field="neck_sh_side" data-type="single">
+            <button class="chip">Left</button><button class="chip">Right</button><button class="chip">Changes</button>
+          </div>
+          <div class="l3-q">Does that shoulder also feel more restricted?</div>
+          <div class="chips" data-field="neck_sh_restrict" data-type="single">
+            <button class="chip">Yes, moves differently</button><button class="chip">Somewhat</button><button class="chip">Same movement, just higher</button>
+          </div>
+        </div>
+        <div class="l3-block" id="neck-l3-5">
+          <div class="l3-q">Do you catch yourself holding your breath when focused?</div>
+          <div class="chips" data-field="neck_brace_breath" data-type="single">
+            <button class="chip">Yes, actually</button><button class="chip">Sometimes</button><button class="chip">Never noticed a connection</button>
+          </div>
+          <div class="l3-q">By evening, do your shoulders feel clenched even after a normal day?</div>
+          <div class="chips" data-field="neck_brace_eve" data-type="single">
+            <button class="chip">Yes, most evenings</button><button class="chip">On harder days</button><button class="chip">Not usually</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- UPPER BACK & CHEST -->
+  <div class="region-section">
+    <button class="card-chip region-chip" value="upper"><span class="region-arrow">▸</span>Upper Back & Chest</button>
+    <div class="region-panel" id="rp-upper">
+      <div class="region-panel-inner">
+        <div class="region-panel-label">What does it feel like? Select all that apply.</div>
+        <div class="cards" data-field="upper_l2" data-type="multi">
+          <button class="card-chip" data-l3="upper-l3-1">Your upper back feels like it needs to crack but never quite gets there</button>
+          <button class="card-chip" data-l3="upper-l3-2">Your shoulders and chest drift forward when you're not thinking about it — like gravity is curling you forward</button>
+          <button class="card-chip" data-l3="upper-l3-3">Reaching overhead takes real effort or just doesn't go all the way</button>
+          <button class="card-chip" data-l3="upper-l3-4">Taking a full deep breath feels like something is in the way</button>
+          <button class="card-chip" data-l3="upper-l3-5">Sitting upright for any length of time takes effort — you end up slumped without noticing</button>
+        </div>
+        <div class="l3-block" id="upper-l3-1">
+          <div class="l3-q">Where does it sit most?</div>
+          <div class="chips" data-field="upper_tight_where" data-type="single">
+            <button class="chip">Between shoulder blades</button><button class="chip">Base of neck</button>
+            <button class="chip">Along my spine</button><button class="chip">Wide band across upper back</button>
+          </div>
+          <div class="l3-q">Tightness, dull ache, or burning?</div>
+          <div class="chips" data-field="upper_tight_type" data-type="single">
+            <button class="chip">Mostly tightness</button><button class="chip">Dull ache</button>
+            <button class="chip">Burning or fatigued</button><button class="chip">All three at different times</button>
+          </div>
+        </div>
+        <div class="l3-block" id="upper-l3-2">
+          <div class="l3-q">When do you notice the forward drift most?</div>
+          <div class="chips" data-field="upper_round_when" data-type="single">
+            <button class="chip">On my phone, looking down</button><button class="chip">At a desk</button>
+            <button class="chip">Catching my reflection</button><button class="chip">Most of the time</button>
+          </div>
+          <div class="l3-q">Does the front of your chest feel like it's pulling you forward?</div>
+          <div class="chips" data-field="upper_round_pull" data-type="single">
+            <button class="chip">Yes, exactly that</button><button class="chip">Somewhat</button><button class="chip">I notice the posture, not the pull</button>
+          </div>
+        </div>
+        <div class="l3-block" id="upper-l3-3">
+          <div class="l3-q">What happens when you reach all the way overhead?</div>
+          <div class="chips" data-field="upper_oh_feel" data-type="multi">
+            <button class="chip">Lower back has to arch</button><button class="chip">One arm goes noticeably higher</button>
+            <button class="chip">Pinching in one shoulder</button><button class="chip">Stiff and blocked</button>
+          </div>
+          <div class="l3-q">Does it affect daily things — high shelf, washing hair?</div>
+          <div class="chips" data-field="upper_oh_daily" data-type="single">
+            <button class="chip">Yes, daily things</button><button class="chip">Occasionally</button><button class="chip">Only at full range</button>
+          </div>
+        </div>
+        <div class="l3-block" id="upper-l3-4">
+          <div class="l3-q">Where do you feel the restriction breathing deeply?</div>
+          <div class="chips" data-field="upper_breath_where" data-type="single">
+            <button class="chip">Chest feels compressed</button><button class="chip">Ribs feel stiff</button>
+            <button class="chip">Around my upper back</button><button class="chip">Can't locate it — just can't fill up</button>
+          </div>
+        </div>
+        <div class="l3-block" id="upper-l3-5">
+          <div class="l3-q">How long before you notice yourself slumped?</div>
+          <div class="chips" data-field="upper_slump_time" data-type="single">
+            <button class="chip">Within a few minutes</button><button class="chip">20–30 minutes</button>
+            <button class="chip">An hour or more</button><button class="chip">Someone else points it out</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOWER BACK -->
+  <div class="region-section">
+    <button class="card-chip region-chip" value="lower"><span class="region-arrow">▸</span>Lower Back</button>
+    <div class="region-panel" id="rp-lower">
+      <div class="region-panel-inner">
+        <div class="region-panel-label">What does it feel like? Select all that apply.</div>
+        <div class="cards" data-field="lower_l2" data-type="multi">
+          <button class="card-chip" data-l3="lower-l3-1">Those first 10–15 minutes out of bed — stiff and slow before your back wakes up</button>
+          <button class="card-chip" data-l3="lower-l3-2">The ache that finds you at the end of a long day at a desk or on your feet</button>
+          <button class="card-chip" data-l3="lower-l3-3">Bending over — tying shoes, loading the dishwasher — you feel it every time</button>
+          <button class="card-chip" data-l3="lower-l3-4">A background hum of discomfort that's just always there</button>
+          <button class="card-chip" data-l3="lower-l3-5">Something that travels — into your glutes, down one leg, somewhere it probably shouldn't go</button>
+        </div>
+        <div class="l3-block" id="lower-l3-1">
+          <div class="l3-q">Once you're moving, does it ease?</div>
+          <div class="chips" data-field="lower_am_ease" data-type="single">
+            <button class="chip">Yes, within 10–20 min</button><button class="chip">Takes most of the morning</button><button class="chip">No pattern</button>
+          </div>
+          <div class="l3-q">Lying flat — lower back presses to floor or arches?</div>
+          <div class="chips" data-field="lower_am_arch" data-type="single">
+            <button class="chip">Presses flat</button><button class="chip">Clear gap — arches off</button><button class="chip">It varies</button>
+          </div>
+        </div>
+        <div class="l3-block" id="lower-l3-2">
+          <div class="l3-q">Where does the ache settle?</div>
+          <div class="chips" data-field="lower_desk_where" data-type="single">
+            <button class="chip">Across lower back, both sides</button><button class="chip">More on one side</button>
+            <button class="chip">Deep in muscle above hips</button><button class="chip">Right at base of spine</button>
+          </div>
+          <div class="l3-q">Does standing and walking ease it?</div>
+          <div class="chips" data-field="lower_desk_walk" data-type="single">
+            <button class="chip">Yes, fairly quickly</button><button class="chip">A little, then it returns</button><button class="chip">Not much</button>
+          </div>
+        </div>
+        <div class="l3-block" id="lower-l3-3">
+          <div class="l3-q">Is it bending down or getting back up?</div>
+          <div class="chips" data-field="lower_bend_dir" data-type="single">
+            <button class="chip">Getting back up</button><button class="chip">Bending down</button>
+            <button class="chip">Both directions</button><button class="chip">Holding the position</button>
+          </div>
+          <div class="l3-q">Do you push off your knees to get back up?</div>
+          <div class="chips" data-field="lower_bend_push" data-type="single">
+            <button class="chip">Yes, without thinking</button><button class="chip">Sometimes</button><button class="chip">Not usually</button>
+          </div>
+        </div>
+        <div class="l3-block" id="lower-l3-4">
+          <div class="l3-q">How long has it been this way?</div>
+          <div class="chips" data-field="lower_hum_dur" data-type="single">
+            <button class="chip">Less than a year</button><button class="chip">1–3 years</button>
+            <button class="chip">3+ years</button><button class="chip">Can't remember without it</button>
+          </div>
+        </div>
+        <div class="l3-block" id="lower-l3-5">
+          <div class="l3-q">Where does it go?</div>
+          <div class="chips" data-field="lower_rad_where" data-type="multi">
+            <button class="chip">Into one glute</button><button class="chip">Down back of one leg</button>
+            <button class="chip">Along outer side of leg</button><button class="chip">Below the knee</button><button class="chip">Both sides</button>
+          </div>
+          <div class="l3-q">What does it feel like?</div>
+          <div class="chips" data-field="lower_rad_type" data-type="single">
+            <button class="chip">Deep ache or pressure</button><button class="chip">Tingling / numbness</button>
+            <button class="chip">Sharp or electric</button><button class="chip">It changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HIPS & PELVIS -->
+  <div class="region-section">
+    <button class="card-chip region-chip" value="hips"><span class="region-arrow">▸</span>Hips & Pelvis</button>
+    <div class="region-panel" id="rp-hips">
+      <div class="region-panel-inner">
+        <div class="region-panel-label">What does it feel like? Select all that apply.</div>
+        <div class="cards" data-field="hips_l2" data-type="multi">
+          <button class="card-chip" data-l3="hips-l3-1">Getting up from a chair or car — your hips feel stiff, almost reluctant, for the first several steps</button>
+          <button class="card-chip" data-l3="hips-l3-2">A tight or grippy feeling in the front of your hip — like something is too short and doesn't want to open</button>
+          <button class="card-chip" data-l3="hips-l3-3">One hip feels higher, more forward, or just different — like your pelvis isn't level</button>
+          <button class="card-chip" data-l3="hips-l3-4">Your backside doesn't seem to do much — your thighs and lower back take over while your glutes are passengers</button>
+          <button class="card-chip" data-l3="hips-l3-5">A click, catch, or pop when you lift your leg or get out of the car</button>
+        </div>
+        <div class="l3-block" id="hips-l3-1">
+          <div class="l3-q">How long before they feel normal?</div>
+          <div class="chips" data-field="hips_stiff_dur" data-type="single">
+            <button class="chip">30 seconds</button><button class="chip">Few minutes of walking</button><button class="chip">Takes a while</button>
+          </div>
+          <div class="l3-q">Worse from a low seat — deep couch, low car?</div>
+          <div class="chips" data-field="hips_stiff_low" data-type="single">
+            <button class="chip">Yes — low seats are harder</button><button class="chip">Somewhat</button><button class="chip">About the same</button>
+          </div>
+        </div>
+        <div class="l3-block" id="hips-l3-2">
+          <div class="l3-q">When does the gripping feeling show up?</div>
+          <div class="chips" data-field="hips_grip_when" data-type="multi">
+            <button class="chip">Standing up from any seat</button><button class="chip">Taking a longer stride</button>
+            <button class="chip">First few stairs</button><button class="chip">Morning</button><button class="chip">All day</button>
+          </div>
+          <div class="l3-q">Standing in line — do you immediately shift to one leg?</div>
+          <div class="chips" data-field="hips_grip_stand" data-type="single">
+            <button class="chip">Yes, almost immediately</button><button class="chip">Sometimes</button><button class="chip">No, fine standing</button>
+          </div>
+        </div>
+        <div class="l3-block" id="hips-l3-3">
+          <div class="l3-q">Which side feels different?</div>
+          <div class="chips" data-field="hips_asym_side" data-type="single">
+            <button class="chip">Left</button><button class="chip">Right</button><button class="chip">Changes</button>
+          </div>
+          <div class="l3-q">What does "different" mean here?</div>
+          <div class="chips" data-field="hips_asym_type" data-type="multi">
+            <button class="chip">Tighter or restricted</button><button class="chip">Feels higher or tilted</button>
+            <button class="chip">Something rotated forward</button><button class="chip">Like two different hips</button>
+          </div>
+        </div>
+        <div class="l3-block" id="hips-l3-4">
+          <div class="l3-q">When you stand up from a low seat, what does the work?</div>
+          <div class="chips" data-field="hips_glute_up" data-type="single">
+            <button class="chip">All my thighs</button><button class="chip">Thighs and lower back</button>
+            <button class="chip">Never noticed</button><button class="chip">My backside kicks in</button>
+          </div>
+          <div class="l3-q">After stairs, what fatigues first?</div>
+          <div class="chips" data-field="hips_glute_stairs" data-type="single">
+            <button class="chip">Thighs, quickly</button><button class="chip">Lower back works hard</button>
+            <button class="chip">Glutes do fatigue</button><button class="chip">Not sure</button>
+          </div>
+        </div>
+        <div class="l3-block" id="hips-l3-5">
+          <div class="l3-q">When does the click happen?</div>
+          <div class="chips" data-field="hips_click_when" data-type="multi">
+            <button class="chip">Getting out of low car or couch</button><button class="chip">Lifting my knee</button>
+            <button class="chip">Walking — one particular step</button><button class="chip">Random</button>
+          </div>
+          <div class="l3-q">Painful or just noticeable?</div>
+          <div class="chips" data-field="hips_click_pain" data-type="single">
+            <button class="chip">Just noticeable</button><button class="chip">Mildly uncomfortable</button><button class="chip">Can be painful</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- KNEES -->
+  <div class="region-section">
+    <button class="card-chip region-chip" value="knees"><span class="region-arrow">▸</span>Knees</button>
+    <div class="region-panel" id="rp-knees">
+      <div class="region-panel-inner">
+        <div class="region-panel-label">What does it feel like? Select all that apply.</div>
+        <div class="cards" data-field="knees_l2" data-type="multi">
+          <button class="card-chip" data-l3="knees-l3-1">Stiff and creaky — especially the first few stairs before they've warmed up</button>
+          <button class="card-chip" data-l3="knees-l3-2">An ache that builds the longer you sit with bent knees — at a desk, in a car, at dinner</button>
+          <button class="card-chip" data-l3="knees-l3-3">Your knees drift inward — stepping off a curb, going downstairs, lowering into a chair</button>
+          <button class="card-chip" data-l3="knees-l3-4">A grinding or crunching going up or down stairs — you feel it more than hear it</button>
+          <button class="card-chip" data-l3="knees-l3-5">A sense of instability — like your knee might not hold on uneven ground or a quick turn</button>
+        </div>
+        <div class="l3-block" id="knees-l3-1">
+          <div class="l3-q">After moving a few minutes, does it settle?</div>
+          <div class="chips" data-field="knees_creak_ease" data-type="single">
+            <button class="chip">Yes, fairly quickly</button><button class="chip">Takes a bit longer</button><button class="chip">Varies day to day</button>
+          </div>
+          <div class="l3-q">Is kneeling — to a child's level, picking something up — uncomfortable?</div>
+          <div class="chips" data-field="knees_creak_kneel" data-type="single">
+            <button class="chip">Yes, uncomfortable</button><button class="chip">A little</button><button class="chip">Kneeling is fine</button>
+          </div>
+        </div>
+        <div class="l3-block" id="knees-l3-2">
+          <div class="l3-q">Where does the ache sit?</div>
+          <div class="chips" data-field="knees_ache_where" data-type="single">
+            <button class="chip">Under the kneecap</button><button class="chip">Inner edge</button>
+            <button class="chip">Outer edge</button><button class="chip">Behind the knee</button>
+          </div>
+        </div>
+        <div class="l3-block" id="knees-l3-3">
+          <div class="l3-q">When do you notice the inward drift?</div>
+          <div class="chips" data-field="knees_valg_when" data-type="multi">
+            <button class="chip">Stepping off a curb</button><button class="chip">Going downstairs</button>
+            <button class="chip">Lowering into a low seat</button><button class="chip">Seen it in a photo or video</button>
+          </div>
+          <div class="l3-q">One knee or both?</div>
+          <div class="chips" data-field="knees_valg_side" data-type="single">
+            <button class="chip">Mostly left</button><button class="chip">Mostly right</button>
+            <button class="chip">Both, but one more</button><button class="chip">Both equally</button>
+          </div>
+        </div>
+        <div class="l3-block" id="knees-l3-4">
+          <div class="l3-q">Pain with it, or just the sensation?</div>
+          <div class="chips" data-field="knees_grind_pain" data-type="single">
+            <button class="chip">Just sensation</button><button class="chip">Mild discomfort</button><button class="chip">Can be painful</button>
+          </div>
+          <div class="l3-q">Going up or down worse?</div>
+          <div class="chips" data-field="knees_grind_dir" data-type="single">
+            <button class="chip">Going up</button><button class="chip">Going down</button><button class="chip">Both equal</button>
+          </div>
+        </div>
+        <div class="l3-block" id="knees-l3-5">
+          <div class="l3-q">When does instability come up?</div>
+          <div class="chips" data-field="knees_unstab_when" data-type="multi">
+            <button class="chip">Down a slope or stairs</button><button class="chip">Uneven ground</button>
+            <button class="chip">Quick sidestep or turn</button><button class="chip">Out of nowhere</button>
+          </div>
+          <div class="l3-q">Has it actually buckled?</div>
+          <div class="chips" data-field="knees_buckle" data-type="single">
+            <button class="chip">Yes</button><button class="chip">Once or twice</button><button class="chip">No — more a fear</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FEET & ANKLES -->
+  <div class="region-section">
+    <button class="card-chip region-chip" value="feet"><span class="region-arrow">▸</span>Feet & Ankles</button>
+    <div class="region-panel" id="rp-feet">
+      <div class="region-panel-inner">
+        <div class="region-panel-label">What does it feel like? Select all that apply.</div>
+        <div class="cards" data-field="feet_l2" data-type="multi">
+          <button class="card-chip" data-l3="feet-l3-1">Those first steps out of bed — your heel or arch is tender until it warms up</button>
+          <button class="card-chip" data-l3="feet-l3-2">You can see it in your shoes — inner edge wears faster, feet roll inward</button>
+          <button class="card-chip" data-l3="feet-l3-3">Your ankles feel stiff — stepping off a curb, going down a slope, squatting feels blocked</button>
+          <button class="card-chip" data-l3="feet-l3-4">An old ankle sprain that technically healed, but that side has never felt quite the same</button>
+          <button class="card-chip" data-l3="feet-l3-5">Aching in your arches or ball of foot after a long day on your feet</button>
+        </div>
+        <div class="l3-block" id="feet-l3-1">
+          <div class="l3-q">Where exactly?</div>
+          <div class="chips" data-field="feet_heel_where" data-type="single">
+            <button class="chip">The heel — first step is sharp</button><button class="chip">The arch — tight and pulled</button>
+            <button class="chip">Ball of foot behind toes</button><button class="chip">Spreads across whole bottom</button>
+          </div>
+          <div class="l3-q">Does it come back after sitting for a while?</div>
+          <div class="chips" data-field="feet_heel_return" data-type="single">
+            <button class="chip">Yes, every time I rest and stand</button><button class="chip">Mostly just mornings</button><button class="chip">Only after very long sits</button>
+          </div>
+        </div>
+        <div class="l3-block" id="feet-l3-2">
+          <div class="l3-q">By end of a long day, do your feet feel specifically fatigued?</div>
+          <div class="chips" data-field="feet_pron_fatigue" data-type="single">
+            <button class="chip">Yes — a specific exhaustion</button><button class="chip">Somewhat</button><button class="chip">Not really</button>
+          </div>
+        </div>
+        <div class="l3-block" id="feet-l3-3">
+          <div class="l3-q">When do you notice the stiffness?</div>
+          <div class="chips" data-field="feet_ank_when" data-type="multi">
+            <button class="chip">Stepping off a curb</button><button class="chip">Squatting to pick something up</button>
+            <button class="chip">Uneven ground</button><button class="chip">First thing in morning</button>
+          </div>
+          <div class="l3-q">When you squat, do your heels come up instead of staying flat?</div>
+          <div class="chips" data-field="feet_ank_heels" data-type="single">
+            <button class="chip">Yes, they come up</button><button class="chip">I think so</button><button class="chip">Heels stay down</button>
+          </div>
+          <div class="l3-q">One ankle stiffer than the other?</div>
+          <div class="chips" data-field="feet_ank_side" data-type="single">
+            <button class="chip">Left stiffer</button><button class="chip">Right stiffer</button><button class="chip">About the same</button>
+          </div>
+        </div>
+        <div class="l3-block" id="feet-l3-4">
+          <div class="l3-q">Which side?</div>
+          <div class="chips" data-field="feet_spr_side" data-type="single">
+            <button class="chip">Left</button><button class="chip">Right</button><button class="chip">Both at different times</button>
+          </div>
+          <div class="l3-q">Do you favor that foot without thinking about it?</div>
+          <div class="chips" data-field="feet_spr_favor" data-type="single">
+            <button class="chip">Yes, definitely</button><button class="chip">Sometimes</button><button class="chip">I don't think so</button>
+          </div>
+        </div>
+        <div class="l3-block" id="feet-l3-5">
+          <div class="l3-q">Where does it ache most?</div>
+          <div class="chips" data-field="feet_arch_where" data-type="single">
+            <button class="chip">The arch</button><button class="chip">Ball of foot</button>
+            <button class="chip">The heel</button><button class="chip">Whole bottom</button>
+          </div>
+          <div class="l3-q">Has your shoe choice changed because of it?</div>
+          <div class="chips" data-field="feet_arch_shoes" data-type="single">
+            <button class="chip">Yes, had to change what I wear</button><button class="chip">Somewhat</button><button class="chip">Not really</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FEEL GOOD -->
+  <div style="margin-top:8px;">
+    <button class="card-chip region-chip" value="none">Honestly, I feel pretty good</button>
+  </div>
+
+  <div class="pb-safe"></div>
+</div>
+
+<!-- ════ L1 CLOSING ════ -->
+<div class="step" id="s-l1-close">
+  <div class="step-header">
+    <div class="step-tag">Layer 1 — Closing</div>
+    <div class="step-title">Last two questions.</div>
+  </div>
+  <div class="field">
+    <label class="field-label">Does your body feel balanced left to right, or does one side carry more?</label>
+    <div class="chips" data-field="overallSymmetry" data-type="single">
+      <button class="chip">Pretty balanced</button>
+      <button class="chip">Left carries more</button>
+      <button class="chip">Right carries more</button>
+      <button class="chip">Shifts day to day</button>
+    </div>
+  </div>
+  <div class="field">
+    <label class="field-label">Anything else your body does that we didn't cover? <span>(optional)</span></label>
+    <textarea id="openText" placeholder="Anything that came to mind as you went through this..."></textarea>
+  </div>
+  <div class="pb-safe"></div>
+</div>
+
+<!-- ════ L2 GATE ════ -->
+<div class="step" id="s-l2-gate">
+  <div class="step-header">
+    <div class="step-tag opt">Optional — Layer 2</div>
+    <div class="step-title">Want to go deeper?</div>
+    <div class="step-sub">If you have a <em>foam roller</em> nearby, this takes 5–8 minutes and makes the corrective part of your program much more precise. You can skip this and still get a great program.</div>
+  </div>
+  <div class="pb-safe"></div>
+</div>
+
+<!-- ════ L2 FOAM ROLLER ════ -->
+<div class="step" id="s-l2">
+  <div class="step-header">
+    <div class="step-tag opt">Layer 2 — Foam Roller</div>
+    <div class="step-title">Roll each area slowly.</div>
+    <div class="step-sub">30–60 seconds each. A little discomfort is normal. Rate what you find — 1 is nothing, 5 is very tender.</div>
+  </div>
+  <div id="roller-areas"></div>
+  <div class="field" style="margin-top:16px;">
+    <label class="field-label">Which area surprised you most? <span>(optional)</span></label>
+    <div class="chips" data-field="rollerSurprise" data-type="single">
+      <button class="chip">Base of skull</button><button class="chip">Upper trap</button>
+      <button class="chip">Thoracic spine</button><button class="chip">Chest / front shoulder</button>
+      <button class="chip">Lats</button><button class="chip">Hip flexors</button>
+      <button class="chip">Outer hip / TFL</button><button class="chip">Inner thigh</button>
+      <button class="chip">Calves</button>
+    </div>
+  </div>
+  <div class="pb-safe"></div>
+</div>
+
+<!-- ════ L3 GATE ════ -->
+<div class="step" id="s-l3-gate">
+  <div class="step-header">
+    <div class="step-tag opt">Optional — Layer 3</div>
+    <div class="step-title">One more optional layer.</div>
+    <div class="step-sub">Two short movement videos — an overhead squat and a push-up — give us the clearest picture of how you move. Set aside about 5 minutes and floor space. You'll need your phone on a surface.</div>
+  </div>
+  <div class="pb-safe"></div>
+</div>
+
+<!-- ════ L3 VIDEO ════ -->
+<div class="step" id="s-l3">
+  <div class="step-header">
+    <div class="step-tag opt">Layer 3 — Movement Video</div>
+    <div class="step-title">Two movements.</div>
+    <div class="step-sub"><em>Don't try to perform perfectly</em> — we want your natural pattern.</div>
+  </div>
+
+  <div class="video-block">
+    <div class="video-name">Movement 1 — Overhead Squat</div>
+    <div class="setup-step"><div class="step-num-badge">1</div><div>Place your phone at <strong>hip height</strong> from the <strong>front</strong>. Full body visible, head to toe.</div></div>
+    <div class="setup-step"><div class="step-num-badge">2</div><div>Stand shoulder-width, toes slightly out. Raise both arms <strong>straight overhead</strong>, hands wider than shoulders.</div></div>
+    <div class="setup-step"><div class="step-num-badge">3</div><div>Keep arms up the <em>entire time</em>. Lower into a squat as deep as comfortable, then back up. <strong>5 reps slowly.</strong></div></div>
+    <div class="setup-step"><div class="step-num-badge">4</div><div>Side view too if you can — helpful but not required.</div></div>
+    <div class="upload-zone">
+      <input type="file" accept="video/*" onchange="handleUpload(this,'squat-front-fn')">
+      <div class="upload-label"><strong>Upload front view</strong><br>Tap to choose video</div>
+      <div class="upload-filename" id="squat-front-fn"></div>
+    </div>
+    <div class="upload-zone">
+      <input type="file" accept="video/*" onchange="handleUpload(this,'squat-side-fn')">
+      <div class="upload-label">Side view <span style="color:var(--ink4)">(optional)</span><br><span style="font-size:12px;color:var(--ink4)">Tap to choose video</span></div>
+      <div class="upload-filename" id="squat-side-fn"></div>
+    </div>
+    <div class="field" style="margin-top:14px;">
+      <label class="field-label">Arms stayed overhead the whole time?</label>
+      <div class="chips" data-field="squat_arms" data-type="single">
+        <button class="chip">Stayed up</button><button class="chip">Fell slightly</button><button class="chip">Fell a lot</button>
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label">Heels stay on the floor?</label>
+      <div class="chips" data-field="squat_heels" data-type="single">
+        <button class="chip">Yes, stayed down</button><button class="chip">Came up a little</button><button class="chip">Came up a lot</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="video-block">
+    <div class="video-name">Movement 2 — Push-Up</div>
+    <div class="setup-step"><div class="step-num-badge">1</div><div>Phone on the <strong>floor, 3 feet to your side</strong>. Camera at floor level, aimed at you sideways.</div></div>
+    <div class="setup-step"><div class="step-num-badge">2</div><div>Plank: hands slightly wider than shoulders, body straight head to heels. <strong>From your knees is completely fine.</strong></div></div>
+    <div class="setup-step"><div class="step-num-badge">3</div><div>Lower chest to floor, push back up. <strong>5 reps, slow and controlled.</strong></div></div>
+    <div class="upload-zone">
+      <input type="file" accept="video/*" onchange="handleUpload(this,'pushup-fn')">
+      <div class="upload-label"><strong>Upload push-up video</strong><br>Tap to choose video</div>
+      <div class="upload-filename" id="pushup-fn"></div>
+    </div>
+    <div class="field" style="margin-top:14px;">
+      <label class="field-label">Shoulders rise toward ears?</label>
+      <div class="chips" data-field="pushup_shoulders" data-type="single">
+        <button class="chip">No</button><button class="chip">A little</button><button class="chip">Yes, noticeably</button>
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label">One side stronger or moved differently?</label>
+      <div class="chips" data-field="pushup_symm" data-type="single">
+        <button class="chip">Felt even</button><button class="chip">Slight difference</button><button class="chip">Clear difference</button>
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label">Any pain during?</label>
+      <div class="chips" data-field="pushup_pain" data-type="single">
+        <button class="chip">None</button><button class="chip">Mild discomfort</button><button class="chip">Yes</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="pb-safe"></div>
+</div>
+
+<!-- ════ OUTPUT ════ -->
+<div class="step" id="s-output">
+  <div class="thankyou">
+    <div class="thankyou-check">✓</div>
+    <h2>All done.</h2>
+    <p>Copy the summary below and send it to Derrick. He'll use it to build your program.</p>
+  </div>
+  <div class="output-card">
+    <div class="output-card-header">
+      <div class="output-card-label">Intake Summary</div>
+      <button class="copy-btn-sm" id="copy-btn" onclick="copyOutput()">Copy</button>
+    </div>
+    <div class="output-text" id="output-text"></div>
+  </div>
+  <div class="pb-safe"></div>
+</div>
+
+</div><!-- end scroll-area -->
+
+<!-- ── BOTTOM NAV ── -->
+<div class="nav" id="nav">
+  <button class="btn btn-back" id="nav-back" onclick="back()">← Back</button>
+  <button class="btn btn-skip" id="nav-skip" onclick="doSkip()" style="display:none;">Skip</button>
+  <button class="btn btn-next" id="nav-next" onclick="doNext()">Continue →</button>
+</div>
+
+</div><!-- end app -->
+
+<script>
+// ══════════ STATE ══════════
+const state = {};
+
+// ══════════ FLOW ══════════
+const BASE_FLOW  = ['s-about','s-life','s-posture','s-l1-open'];
+const TAIL_FLOW  = ['s-l1-close','s-l2-gate'];
+
+let flow = [];
+let idx  = 0;
+
+function buildFlow() {
+  flow = [...BASE_FLOW, ...TAIL_FLOW];
+  if (state._doL2) flow.push('s-l2');
+  flow.push('s-l3-gate');
+  if (state._doL3) flow.push('s-l3');
+  flow.push('s-output');
+}
+
+// ══════════ NAVIGATION ══════════
+function showScreen(id) {
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.getElementById('scroll-area').scrollTop = 0;
+  updateChrome();
+}
+
+function updateChrome() {
+  const id = flow[idx];
+  const isOutput = id === 's-output';
+
+  // Header
+  document.getElementById('topbar').classList.toggle('visible', true);
+  document.getElementById('progress-bar').style.display = '';
+
+  // Progress
+  const pct = Math.round((idx / Math.max(flow.length - 2, 1)) * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('screen-counter').textContent = (idx + 1) + ' / ' + (flow.length - 1);
+
+  // Nav
+  const nav = document.getElementById('nav');
+  nav.classList.add('visible');
+
+  const back = document.getElementById('nav-back');
+  const skip = document.getElementById('nav-skip');
+  const next = document.getElementById('nav-next');
+
+  back.style.display = '';
+  skip.style.display = 'none';
+  next.style.display = '';
+  next.textContent = 'Continue →';
+
+  // Gate screens — skip + action buttons
+  if (id === 's-l2-gate') {
+    skip.style.display = '';
+    skip.textContent = 'Skip';
+    next.textContent = 'I have a roller →';
+  }
+  if (id === 's-l3-gate') {
+    skip.style.display = '';
+    skip.textContent = 'Skip';
+    next.textContent = 'I can do this →';
+  }
+  if (isOutput) {
+    skip.style.display = 'none';
+    next.style.display = 'none';
+    back.textContent = '← Start over';
+  }
+}
+
+function doNext() {
+  collectText();
+  const id = flow[idx];
+
+  if (id === 's-l2-gate') {
+    state._doL2 = true;
+    buildFlow();
+  }
+  if (id === 's-l3-gate') {
+    state._doL3 = true;
+    buildFlow();
+  }
+
+  if (idx < flow.length - 1) {
+    idx++;
+    showScreen(flow[idx]);
+    if (flow[idx] === 's-output') generateOutput();
+  }
+}
+
+function doSkip() {
+  const id = flow[idx];
+  if (id === 's-l2-gate') {
+    state._doL2 = false;
+    buildFlow();
+    idx = flow.indexOf('s-l3-gate');
+    showScreen(flow[idx]);
+  } else if (id === 's-l3-gate') {
+    state._doL3 = false;
+    buildFlow();
+    idx = flow.indexOf('s-output');
+    showScreen('s-output');
+    generateOutput();
+  }
+}
+
+function back() {
+  if (flow[idx] === 's-output') {
+    startOver();
+    return;
+  }
+  if (idx > 0) {
+    idx--;
+    showScreen(flow[idx]);
+  } else {
+    showWelcome();
+  }
+}
+
+function startForm() {
+  buildFlow();
+  idx = 0;
+  document.getElementById('welcome').classList.remove('active');
+  document.getElementById('scroll-area').style.display = '';
+  showScreen(flow[0]);
+}
+
+function showWelcome() {
+  document.getElementById('topbar').classList.remove('visible');
+  document.getElementById('progress-bar').style.display = 'none';
+  document.getElementById('nav').classList.remove('visible');
+  document.getElementById('scroll-area').style.display = 'none';
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  document.getElementById('welcome').classList.add('active');
+}
+
+function startOver() {
+  Object.keys(state).forEach(k => delete state[k]);
+  document.querySelectorAll('.chip,.card-chip,.rating-chip').forEach(c => c.classList.remove('sel'));
+  document.querySelectorAll('input[type="text"],textarea').forEach(i => i.value = '');
+  document.querySelectorAll('.l3-block').forEach(b => b.classList.remove('open'));
+  document.querySelectorAll('.region-panel').forEach(p => p.classList.remove('open'));
+  flow = [];
+  idx = 0;
+  showWelcome();
+}
+
+function collectText() {
+  const textMap = {
+    's-about': ['clientName','goalText'],
+    's-life': ['medicalText','injuriesText'],
+    's-l1-close': ['openText']
+  };
+  const id = flow[idx];
+  if (textMap[id]) {
+    textMap[id].forEach(fid => {
+      const el = document.getElementById(fid);
+      if (el) state[fid] = el.value.trim();
+    });
+  }
+}
+
+// ══════════ CHIPS — event delegation (single listener, no double-fire) ══════════
+document.addEventListener('DOMContentLoaded', () => {
+  buildRollerAreas();
+  document.getElementById('welcome').classList.add('active');
+
+  document.addEventListener('click', e => {
+    const btn = e.target.closest('.chip, .card-chip, .rating-chip');
+    if (!btn) return;
+
+    // Region accordion chips — handle separately
+    if (btn.classList.contains('region-chip')) {
+      handleRegion(btn);
+      return;
+    }
+
+    const group = btn.closest('[data-field]');
+    if (!group) return;
+
+    const field = group.dataset.field;
+    const type  = group.dataset.type;
+
+    if (type === 'ranked') {
+      handleRanked(group, btn, field);
+    } else if (type === 'single') {
+      group.querySelectorAll('.chip,.card-chip,.rating-chip').forEach(b => b.classList.remove('sel'));
+      btn.classList.add('sel');
+      state[field] = btn.value || btn.textContent.trim();
+    } else {
+      // multi
+      btn.classList.toggle('sel');
+      state[field] = [...group.querySelectorAll('.chip.sel,.card-chip.sel')]
+        .map(b => b.value || b.textContent.trim());
+    }
+
+    // L3 accordion
+    const l3id = btn.dataset.l3;
+    if (l3id) {
+      const block = document.getElementById(l3id);
+      if (block) block.classList.toggle('open', btn.classList.contains('sel'));
+    }
+
+    // Training history — show/hide follow-up fields
+    if (field === 'trainingHistory') {
+      const val = state['trainingHistory'] || '';
+      const showGap  = val === 'Trained before, been away for a while' || val === 'On and off over the years';
+      const showExp  = val === 'Trained before, been away for a while' || val === 'On and off over the years' || val === 'Currently training consistently';
+      document.getElementById('training-gap-field').style.display = showGap ? '' : 'none';
+      document.getElementById('training-exp-field').style.display = showExp ? '' : 'none';
+    }
+  });
+});
+
+function handleRanked(group, btn, field) {
+  const max = parseInt(group.dataset.max || '3');
+  const chips = [...group.querySelectorAll('.chip,.card-chip')];
+
+  if (btn.classList.contains('sel')) {
+    // Deselect: remove rank badge, re-number the rest
+    const removedRank = parseInt(btn.dataset.rank || '0');
+    btn.classList.remove('sel');
+    delete btn.dataset.rank;
+    btn.querySelector('.rank-badge')?.remove();
+
+    chips.filter(c => c.classList.contains('sel')).forEach(c => {
+      const r = parseInt(c.dataset.rank || '0');
+      if (r > removedRank) {
+        const newR = r - 1;
+        c.dataset.rank = newR;
+        const badge = c.querySelector('.rank-badge');
+        if (badge) badge.textContent = newR;
+      }
+    });
+  } else {
+    const selected = chips.filter(c => c.classList.contains('sel'));
+    if (selected.length >= max) return; // already at max
+
+    const rank = selected.length + 1;
+    btn.classList.add('sel');
+    btn.dataset.rank = rank;
+
+    const badge = document.createElement('span');
+    badge.className = 'rank-badge';
+    badge.textContent = rank;
+    btn.prepend(badge);
+  }
+
+  // Update hint
+  const hint = document.getElementById('goal-hint');
+  if (hint) {
+    const sel = chips.filter(c => c.classList.contains('sel')).length;
+    if (sel === 0) hint.textContent = 'Tap your #1 goal first, then #2, then #3';
+    else if (sel === 1) hint.textContent = 'Tap to add a #2 goal — or continue';
+    else if (sel === 2) hint.textContent = 'Tap to add a #3 goal — or continue';
+    else hint.textContent = '3 goals selected — tap any to remove';
+  }
+
+  // Save ranked array to state
+  state[field] = chips
+    .filter(c => c.classList.contains('sel'))
+    .sort((a, b) => parseInt(a.dataset.rank || 0) - parseInt(b.dataset.rank || 0))
+    .map(c => {
+      const text = c.textContent.replace(/^\d+/, '').trim();
+      return `#${c.dataset.rank}: ${text}`;
+    });
+}
+
+// ══════════ REGION ACCORDION ══════════
+function handleRegion(btn) {
+  const val = btn.value;
+
+  if (val === 'none') {
+    const wasSelected = btn.classList.contains('sel');
+    // Close all other regions
+    document.querySelectorAll('.region-chip').forEach(c => {
+      c.classList.remove('sel');
+      const p = document.getElementById('rp-' + c.value);
+      if (p) p.classList.remove('open');
+    });
+    if (!wasSelected) btn.classList.add('sel');
+    state['selectedRegions'] = btn.classList.contains('sel') ? ['none'] : [];
+    return;
+  }
+
+  // Deselect "feel good" if a region is being picked
+  const feelGood = document.querySelector('.region-chip[value="none"]');
+  if (feelGood) feelGood.classList.remove('sel');
+
+  btn.classList.toggle('sel');
+  const panel = document.getElementById('rp-' + val);
+  if (panel) panel.classList.toggle('open', btn.classList.contains('sel'));
+
+  state['selectedRegions'] = [...document.querySelectorAll('.region-chip.sel')]
+    .filter(c => c.value !== 'none')
+    .map(c => c.value);
+}
+
+// ══════════ ROLLER AREAS ══════════
+const rollerData = [
+  { id:'skull',    name:'Base of skull / upper neck',  tool:'Tennis ball against wall', instruction:'Press the ball between the wall and the base of your skull, just off center. Let your head weight sink in gently. Hold 30 sec each side.' },
+  { id:'trap',     name:'Upper trap / top of shoulder', tool:'Foam roller or hand',       instruction:'Roll or press into the top of your shoulder where it meets your neck. 30–60 sec each side.' },
+  { id:'thoracic', name:'Mid and upper back',           tool:'Foam roller',               instruction:'Lie back on the roller placed across your mid-back. Support your head. Extend slowly over it, inch up toward your shoulders.' },
+  { id:'pec',      name:'Chest / front of shoulder',   tool:'Lacrosse ball against wall', instruction:'Stand near a wall. Place the ball just inside your shoulder (pec minor area). Lean in and roll in small circles.' },
+  { id:'lats',     name:'Lats — side of your back',     tool:'Foam roller',               instruction:'Lie on your side with the roller under your armpit. Roll down the side of your back toward your hip.' },
+  { id:'hipflexor',name:'Hip flexors — front of hip',   tool:'Foam roller',               instruction:'Lie face down with the roller under one hip, just inside your hip bone. Roll slowly. Switch sides.' },
+  { id:'tfl',      name:'Outer hip — TFL / IT band',    tool:'Foam roller',               instruction:'Lie on your side with the roller under your outer hip. Roll from just below the hip toward the knee.' },
+  { id:'adductor', name:'Inner thigh — adductors',      tool:'Foam roller',               instruction:'Lie face down with one leg out. Roller under your inner thigh. Roll from groin toward knee.' },
+  { id:'calf',     name:'Calves',                       tool:'Foam roller',               instruction:'Sit with the roller under your calves. Lift your body with your hands and roll from ankle to just below the knee.' }
+];
+
+function buildRollerAreas() {
+  const container = document.getElementById('roller-areas');
+  if (!container) return;
+  rollerData.forEach(area => {
+    const div = document.createElement('div');
+    div.className = 'roller-area';
+    div.innerHTML = `
+      <div class="roller-name">${area.name}</div>
+      <div class="roller-tool">${area.tool}</div>
+      <div class="roller-instruction">${area.instruction}</div>
+      <div class="l3-q">Tenderness</div>
+      <div class="rating-chips" data-field="roller_${area.id}_r" data-type="single">
+        <button class="rating-chip">1</button><button class="rating-chip">2</button>
+        <button class="rating-chip">3</button><button class="rating-chip">4</button>
+        <button class="rating-chip">5</button>
+      </div>
+      <div class="rating-labels"><span>Nothing</span><span>Very tender</span></div>
+      <div class="l3-q" style="margin-top:10px;">Side difference?</div>
+      <div class="chips" data-field="roller_${area.id}_s" data-type="single">
+        <button class="chip">Same both sides</button>
+        <button class="chip">Left worse</button>
+        <button class="chip">Right worse</button>
+        <button class="chip">N/A</button>
+      </div>`;
+    container.appendChild(div);
+  });
+  // No initChips() here — event delegation on document handles all chips
+}
+
+// ══════════ FILE UPLOAD ══════════
+function handleUpload(input, labelId) {
+  if (input.files[0]) {
+    const el = document.getElementById(labelId);
+    el.textContent = '✓ ' + input.files[0].name;
+    el.style.display = 'block';
+  }
+}
+
+// ══════════ OUTPUT ══════════
+function v(key) {
+  const val = state[key];
+  if (!val || (Array.isArray(val) && !val.length)) return '—';
+  return Array.isArray(val) ? val.join(', ') : val;
+}
+
+function generateOutput() {
+  const d = new Date().toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
+  const lines = [];
+
+  lines.push('RGNR8V HLTH — CLIENT INTAKE');
+  lines.push('='.repeat(40));
+  lines.push(`Date: ${d}`);
+  lines.push(`Client: ${v('clientName')}`);
+  lines.push('');
+
+  lines.push('── ABOUT YOU ──');
+  lines.push(`Goal: ${v('primaryGoal')}`);
+  if (state.goalText) lines.push(`In their words: "${state.goalText}"`);
+  const trainingHistoryLine = [v('trainingHistory'), v('trainingGap'), v('trainingPriorExp')].filter(Boolean).join(' / ');
+  lines.push(`Training history: ${trainingHistoryLine || '—'}`);
+  lines.push(`Days/week: ${v('daysPerWeek')}   Session: ${v('sessionLength')}`);
+  const equipExtra = (document.getElementById('equipmentText')?.value || '').trim();
+  lines.push(`Equipment: ${v('equipment')}${equipExtra ? '; ' + equipExtra : ''}`);
+  lines.push('');
+
+  lines.push('── LIFESTYLE ──');
+  lines.push(`Sitting: ${v('sittingHours')}   Sleep 7+: ${v('sleepNights')}   Stress: ${v('stressLevel')}/10`);
+  lines.push(`Medical: ${v('medicalFlags')}${state.medicalText ? ' — ' + state.medicalText : ''}`);
+  lines.push(`Injuries: ${v('injuries')}${state.injuriesText ? ' — ' + state.injuriesText : ''}`);
+  lines.push(`Aggravating: ${v('aggravating')}`);
+  lines.push(`Provider: ${v('hasProvider')}`);
+  lines.push('');
+
+  lines.push('── POSTURE ──');
+  lines.push(`Head: ${v('headPosition')}`);
+  lines.push(`Palms: ${v('palmDirection')}   Upper back: ${v('upperBack')}`);
+  lines.push(`Low back wall: ${v('lowerBackWall')}`);
+  lines.push(`Knees: ${v('kneeStance')}   Arches: ${v('archPosition')}`);
+  lines.push('');
+
+  lines.push('── LAYER 1 — BODY ASSESSMENT ──');
+  const regions = state['selectedRegions'] || [];
+  if (!regions.length || regions.includes('none')) {
+    lines.push('Client reports feeling pretty good.');
+  } else {
+    lines.push(`Regions: ${regions.join(', ')}`);
+
+    const rFields = {
+      neck:  [['neck_l2','Presentation'],['neck_tight_loc','Tightness loc'],['neck_tight_when','Worst time'],['neck_tight_shower','Hot shower'],['neck_ha_loc','HA location'],['neck_ha_trigger','HA trigger'],['neck_rot_side','Rotation side'],['neck_rot_feel','Rotation feel'],['neck_sh_side','Shoulder height'],['neck_sh_restrict','Shoulder restrict'],['neck_brace_breath','Holds breath'],['neck_brace_eve','Evening tension']],
+      upper: [['upper_l2','Presentation'],['upper_tight_where','Tight where'],['upper_tight_type','Tight type'],['upper_round_when','Forward drift when'],['upper_round_pull','Chest pull'],['upper_oh_feel','Overhead feel'],['upper_oh_daily','Overhead daily'],['upper_breath_where','Breath restrict'],['upper_slump_time','Slump time']],
+      lower: [['lower_l2','Presentation'],['lower_am_ease','AM ease'],['lower_am_arch','Lying arch'],['lower_desk_where','Ache where'],['lower_desk_walk','Walking helps'],['lower_bend_dir','Bend direction'],['lower_bend_push','Push-off'],['lower_hum_dur','Duration'],['lower_rad_where','Radiates to'],['lower_rad_type','Sensation']],
+      hips:  [['hips_l2','Presentation'],['hips_stiff_dur','Stiffness duration'],['hips_stiff_low','Low seat'],['hips_grip_when','Grip timing'],['hips_asym_side','Asymmetry side'],['hips_asym_type','Asymmetry type'],['hips_glute_up','Stand-up mechanics'],['hips_glute_stairs','Stairs fatigue'],['hips_click_when','Click timing'],['hips_click_pain','Click pain']],
+      knees: [['knees_l2','Presentation'],['knees_creak_ease','Creak ease'],['knees_creak_kneel','Kneeling'],['knees_ache_where','Ache where'],['knees_valg_when','Valgus when'],['knees_valg_side','Valgus side'],['knees_grind_pain','Grind pain'],['knees_grind_dir','Grind direction'],['knees_unstab_when','Instability'],['knees_buckle','Buckled']],
+      feet:  [['feet_l2','Presentation'],['feet_heel_where','Heel where'],['feet_heel_return','Returns'],['feet_pron_fatigue','Fatigue'],['feet_ank_when','Ankle stiff when'],['feet_ank_heels','Heels up'],['feet_ank_side','Ankle side'],['feet_spr_side','Sprain side'],['feet_spr_favor','Favors'],['feet_arch_where','Arch where'],['feet_arch_shoes','Shoes changed']],
+    };
+    lines.push('');
+    regions.filter(r => r !== 'none').forEach(r => {
+      const label = { neck:'NECK & SHOULDERS', upper:'UPPER BACK & CHEST', lower:'LOWER BACK', hips:'HIPS & PELVIS', knees:'KNEES', feet:'FEET & ANKLES' }[r];
+      lines.push(label + ':');
+      (rFields[r] || []).forEach(([key, lbl]) => {
+        if (state[key]) lines.push(`  ${lbl}: ${v(key)}`);
+      });
+      lines.push('');
+    });
+  }
+
+  lines.push(`Overall symmetry: ${v('overallSymmetry')}`);
+  if (state.openText) lines.push(`Notes: "${state.openText}"`);
+  lines.push('');
+
+  if (state._doL2) {
+    lines.push('── LAYER 2 — FOAM ROLLER ──');
+    rollerData.forEach(a => {
+      const r = state[`roller_${a.id}_r`] || '—';
+      const s = state[`roller_${a.id}_s`] || '—';
+      lines.push(`  ${a.name}: ${r}/5  ${s}`);
+    });
+    if (state.rollerSurprise) lines.push(`  Most surprising: ${state.rollerSurprise}`);
+    lines.push('');
+  }
+
+  if (state._doL3) {
+    lines.push('── LAYER 3 — MOVEMENT ──');
+    lines.push(`  Squat arms: ${v('squat_arms')}   Heels: ${v('squat_heels')}`);
+    lines.push(`  Push-up shoulders: ${v('pushup_shoulders')}   Symmetry: ${v('pushup_symm')}   Pain: ${v('pushup_pain')}`);
+    lines.push('  [Review uploaded videos before generating program]');
+    lines.push('');
+  }
+
+  lines.push('── PROGRAM GENERATION ──');
+  lines.push('Paste this into a Claude conversation in the RGNR8V HLTH');
+  lines.push('project with this instruction:');
+  lines.push('');
+  lines.push('"Using decision-matrix.json and exercise-database.json,');
+  lines.push('and following GENERATE-PROGRAM.md, generate a personalized');
+  lines.push('training program for this client."');
+
+  document.getElementById('output-text').textContent = lines.join('\n');
+}
+
+function copyOutput() {
+  const text = document.getElementById('output-text').textContent;
+  const btn = document.getElementById('copy-btn');
+
+  const confirm = () => {
+    btn.textContent = '✓ Copied';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2500);
+  };
+
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(confirm).catch(() => fallbackCopy(text, confirm));
+  } else {
+    fallbackCopy(text, confirm);
+  }
+}
+
+function fallbackCopy(text, callback) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0;';
+  document.body.appendChild(ta);
+  ta.focus();
+  ta.select();
+  try { document.execCommand('copy'); callback(); } catch(e) {}
+  document.body.removeChild(ta);
+}
+</script>
+</body>
+</html>
