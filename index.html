@@ -760,6 +760,19 @@ select:focus { outline: none; border-color: var(--accent); }
     <div class="goal-hint" id="goal-hint">Tap your #1 goal first, then #2, then #3</div>
   </div>
 
+  <!-- Recover-from-injury follow-up: destination goal for the phase-arc archetype handoff -->
+  <div class="field" id="recovered-goal-block" style="display:none;">
+    <label class="field-label">Once you're recovered, what's the goal? <span>Recovery is a phase, not a destination — where should training take you after the rebuild?</span></label>
+    <div class="chips" data-field="recoveredGoal" data-type="single">
+      <button value="recoveredGoal__build_strength" class="chip">Build strength</button>
+      <button value="recoveredGoal__lose_body_fat" class="chip">Lose body fat</button>
+      <button value="recoveredGoal__move_and_feel_better" class="chip">Move and feel better</button>
+      <button value="recoveredGoal__athletic_performance" class="chip">Athletic performance</button>
+      <button value="recoveredGoal__health_longevity" class="chip">Health & longevity</button>
+      <button value="recoveredGoal__not_sure" class="chip">Not sure yet</button>
+    </div>
+  </div>
+
   <div class="field">
     <label class="field-label">In your own words <span>(optional)</span></label>
     <textarea id="goalText" placeholder="What changes? What becomes possible?"></textarea>
@@ -2062,6 +2075,9 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
+    // Primary goal — show/hide the "goal once recovered" follow-up (handoff destination)
+    if (field === 'primaryGoal') syncRecoveredGoalVis();
+
     // Training history — show/hide follow-up panels
     if (field === 'trainingHistory') {
       document.querySelectorAll('.training-followup').forEach(el => el.style.display = 'none');
@@ -2076,6 +2092,19 @@ document.addEventListener('DOMContentLoaded', () => {
     persist();
   });
 });
+
+// Show the "goal once recovered" follow-up whenever Recover from injury is a ranked
+// goal; hide it and purge its answer otherwise so stale data never prints in the output.
+function syncRecoveredGoalVis() {
+  const block = document.getElementById('recovered-goal-block');
+  if (!block) return;
+  const wantsRecovery = (state.primaryGoal || []).some(g => String(g).includes('primaryGoal__recover_from_injury'));
+  block.style.display = wantsRecovery ? '' : 'none';
+  if (!wantsRecovery) {
+    delete state.recoveredGoal;
+    block.querySelectorAll('.chip').forEach(c => c.classList.remove('sel'));
+  }
+}
 
 // ══════════ ACCESSIBILITY ══════════
 // Keep aria-pressed / aria-expanded in sync with visual selection on every chip.
@@ -2169,6 +2198,7 @@ function restoreUI() {
   });
   const panelId = TH_PANEL[state.trainingHistory];
   if (panelId) { const p = document.getElementById(panelId); if (p) p.style.display = ''; }
+  syncRecoveredGoalVis();
   renderInjuryStages();
   if (state.videoFiles) Object.entries(state.videoFiles).forEach(([labelId, f]) => {
     const el = document.getElementById(labelId); if (el) { el.textContent = '✓ ' + f.name; el.style.display = 'block'; }
@@ -2502,6 +2532,7 @@ function generateOutput() {
 
   lines.push('── ABOUT YOU ──');
   lines.push(`Goal: ${vcRanked('primaryGoal')}`);
+  if (state.recoveredGoal) lines.push(`Goal once recovered: ${vc('recoveredGoal')}`);
   if (state.goalText) lines.push(`In their words: "${state.goalText}"`);
   // Physical stats + BMI — captured (and required) when fat loss is a goal; drives the body-mass programming lens
   {
